@@ -5,98 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: qsymond <qsymond@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/05/10 18:45:01 by qsymond           #+#    #+#             */
-/*   Updated: 2020/05/10 18:47:17 by qsymond          ###   ########.fr       */
+/*   Created: 2020/05/13 21:04:33 by qsymond           #+#    #+#             */
+/*   Updated: 2020/05/13 21:04:52 by qsymond          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static	int		wordcount(char *s, char c)
+static int	arr_len(char const *s, char c)
 {
-	int wc;
+	int	count;
 
-	if (!*s)
-		return (0);
-	wc = 0;
+	count = 0;
+	if (!s)
+		return (-1);
 	while (*s)
 	{
-		if ((*s != c) && (*(s + 1) == c || *(s + 1) == '\0'))
-			wc++;
-		s++;
-	}
-	return (wc);
-}
-
-static	int		*wordlength(char *s, char c, int wc)
-{
-	int *wl;
-	int i;
-
-	if (((wl = (int*)malloc(sizeof(int) * wc)) == 0) || !s)
-		return (0);
-	i = 0;
-	while (*s && wc--)
-	{
-		wl[i] = 0;
-		while (*s == c)
-			s++;
+		if (*s != c)
+			count++;
 		while (*s != c && *s)
-		{
 			s++;
-			wl[i]++;
-		}
-		i++;
+		while (*s == c && *s)
+			s++;
 	}
-	return (wl);
+	return (count);
 }
 
-static	void	*garbage(char **split, int i)
+static char	*sep_str(char const *s, char c)
 {
-	while (i >= 0)
-		free(split[i--]);
+	int		len;
+
+	len = 0;
+	while (s[len] != c && s[len])
+		len++;
+	return (ft_substr(s, 0, len));
+}
+
+static void	*free_arr(char **arr)
+{
+	if (arr)
+	{
+		while (*arr)
+			free(*arr++);
+		free(arr);
+	}
 	return (0);
 }
 
-static	char	**spliit(char *ss, char c, char **split, int wc)
+char		**ft_split(char const *s, char c)
 {
-	int i;
-	int j;
-	int *wl;
+	char	**arr;
+	int		i;
+	int		len;
 
 	i = 0;
-	if ((wl = wordlength(ss, c, wc)) == 0)
-		return (0);
-	while (i < wc)
+	len = arr_len(s, c);
+	arr = (char **)malloc(sizeof(char *) * (len + 1));
+	if (arr)
 	{
-		j = 0;
-		while (*ss == c)
-			ss++;
-		if (*ss != c && *ss)
+		while (i < len)
 		{
-			if ((split[i] = (char*)malloc(wl[i] + 1)) == 0)
-				return (garbage(split, i));
-			while (*ss != c && *ss)
-				split[i][j++] = *ss++;
-			split[i][j] = '\0';
+			while (*s == c && *s)
+				s++;
+			arr[i] = sep_str(s, c);
+			if (!arr[i])
+				return (free_arr(arr));
+			while (*s != c && *s)
+				s++;
+			i++;
 		}
-		i++;
+		arr[i] = NULL;
+		return (arr);
 	}
-	split[i] = 0;
-	return (split);
-}
-
-char			**ft_split(char const *s, char c)
-{
-	char	**split;
-	char	*ss;
-	int		wc;
-
-	ss = (char *)s;
-	if (!ss)
-		return (0);
-	wc = wordcount(ss, c);
-	if (((split = (char**)malloc(sizeof(char*) * (wc + 1))) == 0))
-		return (0);
-	return (spliit(ss, c, split, wc));
+	return (0);
 }
