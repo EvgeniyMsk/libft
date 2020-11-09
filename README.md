@@ -1,5 +1,5 @@
 # libft
-Зачтенный проект ft_libft. 115 by Moulinette.
+ft_libft. Graded for 115 by Moulinette.
 
 Description
 This project is your very first project as a student at 42. 
